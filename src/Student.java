@@ -56,6 +56,11 @@ public class Student {
         Student s = new Student(id, fn, ln, fn, exp, false, true, true, true, true, gender, wantsGender);
         return s;
     }
+    
+    public Student clone() {
+        Student s = new Student(id, fn, ln, fn, experienceLevel, false, true, true, true, true, gender, wantsGender);
+        return s;
+    }
 
     private static double averageGrades(String[] vals, int firstIndex, int lastIndex) {
         double sum = 0;

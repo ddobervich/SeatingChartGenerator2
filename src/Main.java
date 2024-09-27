@@ -42,7 +42,7 @@ public class Main extends PApplet {
     private int[] draggingSeat = null;    // { group index, row-within-group, col-within-group }
 
     public void settings() {
-        size(1200, 1000);
+        size(1200, 600);
     }
 
     public void setup() {
@@ -66,7 +66,6 @@ public class Main extends PApplet {
             ArrayList<Student> studentData = loadStudents(base_path + file);
             System.out.println("Loaded " + studentData.size() + " students.");
             Student.fixDisplayNames(studentData);
-
             chart.addStudents(studentData);
             String partnerHistoryFileName = file.substring(0, file.indexOf(".")) + "-partnerHistories.csv";
             chart.loadPartnerHistoryFromFile(BASE_PATH + partnerHistoryFileName);
@@ -303,23 +302,39 @@ public class Main extends PApplet {
         if (key == 'e' || key == 'E') {
             toggle("exp level");
         }
-
+        if (key == 'j' || key == 'J') {
+            long millisStart = System.currentTimeMillis();
+            chart.assignStudentsEfficiently();
+            displayList = makeDisplayListFor(chart);
+            currentScore = chart.getPenalty();
+            currentChartIndex = -1;
+            if(isOn("show sorting time")) {
+                System.out.println("time to sort:" + (System.currentTimeMillis() - millisStart));
+            }
+        }
         if (key == 'r' || key == 'R') {
             reshuffle();
             currentScore = chart.getPenalty();
             currentChartIndex = -1;
         }
-
+        if (key == 'h' || key == 'H') {
+            toggle("hide errors");
+            chart.setDisplayErrors(isOn("hide errors"));
+        }
         if (key == 'n' || key == 'N') {
             toggle("group numbers");
         }
 
         if (key == 'o' || key == 'O') {
+            long millisStart = System.currentTimeMillis();
             SeatingChart best = randomSearchForBestChart(NUM_TO_SEARCH);
             chart = best;
             displayList = makeDisplayListFor(chart);
             currentScore = chart.getPenalty();
             currentChartIndex = -1;
+            if(isOn("show sorting time")) {
+                System.out.println((System.currentTimeMillis() - millisStart));
+            }
         }
 
         if (key == 'u' || key == 'U') {     // USE
@@ -400,6 +415,7 @@ public class Main extends PApplet {
                 bestChart = new SeatingChart(chart);
                 if (minScore == 0) return bestChart;
             }
+
         }
 
         System.out.println("Done.  Best chart has score: " + bestChart.getPenalty());

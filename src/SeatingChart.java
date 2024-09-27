@@ -8,7 +8,7 @@ public class SeatingChart {
     private ArrayList<Group> groups;
     private ArrayList<Student> students;
     private int studentsPerGroup;
-
+    private boolean displayErrors = false;
     private Comparator<Group> groupComparator = new Comparator<Group>() {
         @Override
         public int compare(Group o1, Group o2) {
@@ -51,6 +51,10 @@ public class SeatingChart {
 
     public ArrayList<Group> getGroups() {
         return this.groups;
+    }
+
+    public void setDisplayErrors(boolean val){
+        displayErrors = val;
     }
 
     public void addStudent(Student s) {
@@ -98,7 +102,53 @@ public class SeatingChart {
         ArrayList<Student> cleared = clearGroupAssignments();
         assignStudentsRandomly(cleared);
     }
-
+    private void OptimizeGroupings(){
+        for (int i = 0; i < groups.size(); i++) {
+            for (int j = 0; j < groups.size(); j++){
+                if(i != j) optimizeGrouping(groups.get(i),groups.get(j));
+            }
+        }
+        System.out.println("Found solution: " + getPenalty());
+    }
+    private void optimizeGrouping(Group g1, Group g2){
+        double currScore = getPenalty();
+        for (int i = 0; i < g1.getGroupSize(); i++) {
+            Student s1 = g1.remove(i);
+            if(s1 == null) continue;
+            s1 = s1.clone();
+            for (int j = 0; j < g2.getGroupSize(); j++) {
+                Student s2 = g2.remove(j);
+                if (s2 == null) continue;
+                s2 = s2.clone();
+                g1.set(i,s2.clone(),displayErrors);
+                g2.set(j,s1.clone(),displayErrors);
+                if(currScore < getPenalty()){
+                    currScore = getPenalty();
+                } else {
+                    g1.set(i,s1.clone(),displayErrors);
+                    g2.set(j,s2.clone(),displayErrors);
+                    if(g1.get(i) == g2.get(j)){
+                        System.out.println(true);
+                    };
+                }
+            }
+        }
+    }
+    public ArrayList<Student> assignStudentsEfficiently(){
+        ArrayList<Student> cleared = clearGroupAssignments();
+        Collections.sort(cleared, (o1, o2) -> (int)(o2.getExperienceLevel() - o1.getExperienceLevel()));
+        int nextStudent = cleared.size() - 1;
+        for (Group group : groups) {
+            while (group.hasSpace()) {
+                group.add(cleared.remove(nextStudent));
+                nextStudent--;
+                this.penaltyDirty = true;
+                if (nextStudent < 0)break;
+            }
+        }
+        OptimizeGroupings();
+        return cleared;
+    }
     /***
      * Randomly assign List of students to groups with space.  Returns any unassigned students.
      * @param toAssign list of students to assign random places
@@ -352,7 +402,7 @@ public class SeatingChart {
                 student.clearPartnerHistory();
                 for (int i = 2; i < parts.length; i += 2) {
                     String idStr = parts[i].trim();
-                    int num = Integer.parseInt(parts[i + 1].trim());
+                    int num = Integer.parseInt(parts[i].trim());
                     student.setPartnerHistoryFor(idStr, num);
                 }
             }

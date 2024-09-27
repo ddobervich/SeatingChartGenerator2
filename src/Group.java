@@ -119,7 +119,19 @@ public class Group {
         this.penaltyDirty  = true;
         return removed;
     }
+    
+    public Student set(int position, Student student, boolean showError) {
+        if (seats[position] != null && showError) {
+            System.err.println("Warning: overwriting an existing student: ");
+            System.err.println(seats[position]);
+        }
+        Student removed = seats[position];
+        seats[position] = student;
 
+        this.penaltyDirty  = true;
+        return removed;
+    }
+    
     public Student remove(int position) {
         Student removed = seats[position];
         seats[position] = null;

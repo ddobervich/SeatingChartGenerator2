@@ -23,6 +23,9 @@ public class ControlWindow extends PApplet {
         switches.put("mirror", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*2)).setText("mirror for (p)rinting"));
         switches.put("display conflicts", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*4)).setText("display (c)onflicts"));
         switches.put("exp level", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*6)).setText("display (e)xperience level"));
+        switches.put("hide errors", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*8)).setText("(h)ides errors"));
+        switches.put("show sorting time",new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*10)).setText("in millis (no keybind)"));
+    
     }
 
     public void draw() {
