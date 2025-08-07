@@ -6,6 +6,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /*
+todo:  ADD ABILITY TO DRAG CARD OFF A SEAT TO SIDE AREA TEMPORARILY...
+            MAYBE A "TO BE ADDED LIST AREA"
+
 TODO: bug: if some charts have 2 per group and some 3, display doesn't change as we arrow through them
 TODO: add way to delete a chart that appropriately updates the partner histories
 TODO: make color-coding for attainment (or other marking) so I can print and me/TA's can see
@@ -15,7 +18,7 @@ public class Main extends PApplet {
     private ControlWindow controlWindow;
 
     private String BASE_PATH = "DataFiles/";
-    private String file = "block7-2024.csv";
+    private String file = "block1-2025.csv";
 
     private static final float TEXT_SIZE = 32;
     private static final int TOP_BUFF = 80;
@@ -25,10 +28,10 @@ public class Main extends PApplet {
     private static final int LIST_LAYOUT = 0;
     private static final int ROOM_LAYOUT = 1;
 
-    private int studentsPerGroup = 3;
+    private int defaultStudentsPerGroup = 3;
     private int currentSelectionIndex = -1;
 
-    SeatingChart chart = new SeatingChart(studentsPerGroup);
+    SeatingChart chart = new SeatingChart(defaultStudentsPerGroup, 14);
     ArrayList<DisplayBox> displayList = new ArrayList<DisplayBox>();
     float verticalBuffer = 10;
     float textHeight, boxHeight;
@@ -53,13 +56,12 @@ public class Main extends PApplet {
         float strDescent = textDescent();
         textHeight = strAscent + strDescent;
         boxHeight = textHeight + verticalBuffer;
-        numNamesPerCol = (int) (studentsPerGroup * (height - TOP_BUFF) / boxHeight);
+        numNamesPerCol = (int) (defaultStudentsPerGroup * (height - TOP_BUFF) / boxHeight);
 
-        loadFile(BASE_PATH, file);
+        loadFile(BASE_PATH, file, defaultStudentsPerGroup);
     }
 
-    private void loadFile(String base_path, String file) {
-        this.chart.clear();
+    private void loadFile(String base_path, String file, int studentsPerGroup) {
         this.file = file;       // hackhackhack =(
 
         try {
@@ -67,16 +69,24 @@ public class Main extends PApplet {
             System.out.println("Loaded " + studentData.size() + " students.");
             Student.fixDisplayNames(studentData);
 
+            this.chart = new SeatingChart(studentsPerGroup, 14);
             chart.addStudents(studentData);
+        } catch (IOException e) {
+            System.err.println("Couldn't read the file: " + file);
+            maxChartIndex = -1;
+        }
+
+        try {
             String partnerHistoryFileName = file.substring(0, file.indexOf(".")) + "-partnerHistories.csv";
+
             chart.loadPartnerHistoryFromFile(BASE_PATH + partnerHistoryFileName);
             String baseFileName = file.substring(0, file.indexOf("."));
             String nextNum = SeatingChart.getNumForNextSequentialFilename(BASE_PATH, baseFileName);
             this.maxChartIndex = Integer.parseInt(nextNum) - 1;
-            System.out.println("Max chart index is: " + maxChartIndex);
+            // System.out.println("Max chart index is: " + maxChartIndex);
         } catch (IOException e) {
-            System.err.println("Couldn't read the file: " + file);
-            maxChartIndex = -1;
+            System.err.println("Couldn't read partner histories file (OK if first run)");
+            e.printStackTrace();
         }
 
         numColumns = (int) (chart.getStudents().size() / numNamesPerCol) + 1;
@@ -120,7 +130,7 @@ public class Main extends PApplet {
 
     private ArrayList<DisplayBox> makeRm72DisplayChartRowsFor(SeatingChart chart) {
         ArrayList<DisplayBox> out = new ArrayList<>();
-        int BOX_WIDTH = 350;
+        int BOX_WIDTH = 300;
         int BOX_HEIGHT = 100;
         int X_SKIP = 400;
         int Y_SKIP = 200;
@@ -129,8 +139,8 @@ public class Main extends PApplet {
 
         int nextGroup = 0;
 
-        for (int col = 2; col >= 0; col--) {
-            for (int row = 3; row >= 0; row--) {
+        for (int row = 4; row >= 0; row--) {
+            for (int col = 2; col >= 0; col--) {
                 if (nextGroup >= chart.getGroups().size()) return out;
                 Group group = chart.getGroups().get(nextGroup);
                 nextGroup++;
@@ -198,12 +208,12 @@ public class Main extends PApplet {
             fill(0);
             stroke(0);
             textAlign(RIGHT);
-            text("Chart " + (currentChartIndex+1) + " of " + (maxChartIndex + 1), width / 2, height - 40);
+            text("Chart " + (currentChartIndex + 1) + " of " + (maxChartIndex + 1), width / 2, height - 40);
         }
 
         // Display block number in upper left
         textAlign(LEFT);
-        text(file.substring(0, file.indexOf(".")-5), 20, 30);
+        text(file.substring(0, file.indexOf(".") - 5), 20, 30);
 
         if (isOn("mirror")) {
             textAlign(LEFT);
@@ -235,8 +245,8 @@ public class Main extends PApplet {
     private void drawColHeaders() {
         fill(0);
         stroke(0);
-        for (int i = 0; i < studentsPerGroup; i++) {
-            text("seat " + (i + 1), LEFT_BUFF + i * (columnWidth / studentsPerGroup), 10);
+        for (int i = 0; i < chart.getStudentsPerGroup(); i++) {
+            text("seat " + (i + 1), LEFT_BUFF + i * (columnWidth / chart.getStudentsPerGroup()), 10);
         }
     }
 
@@ -327,27 +337,34 @@ public class Main extends PApplet {
             chart.save(BASE_PATH, baseFileName);
             currentChartIndex = maxChartIndex;
             maxChartIndex++;
-            System.out.println("Max chart index now: "+ maxChartIndex);
+            System.out.println("Max chart index now: " + maxChartIndex);
             currentSelectionIndex++;
         }
 
         if (key == '2') {
-            loadFile(BASE_PATH, "block2-2024.csv");
+            loadFile(BASE_PATH, "block2-2025.csv", 3);
         }
         if (key == '3') {
-            loadFile(BASE_PATH, "block3-2024.csv");
+            loadFile(BASE_PATH, "block3-2025.csv", 3);
+            blockAllPositions(2);
         }
         if (key == '4') {
-            loadFile(BASE_PATH, "block4-2024.csv");
+            loadFile(BASE_PATH, "block4-2025.csv", 3);
+            blockAllPositions(2);
         }
         if (key == '6') {
-            loadFile(BASE_PATH, "block6-2024.csv");
+            loadFile(BASE_PATH, "block6-2025.csv", 3);
         }
-        if (key == '7') {
-            loadFile(BASE_PATH, "block7-2024.csv");
+        if (key == '1') {
+            loadFile(BASE_PATH, "block1-2025.csv", 3);
         }
     }
 
+    private void blockAllPositions(int position) {
+        for (Group group : chart.getGroups()) {
+            group.blockSeat(position);
+        }
+    }
 
     public void mousePressed() {
         draggingSeat = getSeatAt(mouseX, mouseY, displayList);
@@ -359,7 +376,7 @@ public class Main extends PApplet {
 
             if (desk.isMouseOver(mouseX, mouseY)) {
                 int[] indicies = desk.getNameBoxIndicies(mouseX, mouseY);
-                return new int[] {i, indicies[0], indicies[1]};
+                return new int[]{i, indicies[0], indicies[1]};
             }
         }
 

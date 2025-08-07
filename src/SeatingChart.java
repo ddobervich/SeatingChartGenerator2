@@ -9,12 +9,20 @@ public class SeatingChart {
     private ArrayList<Student> students;
     private int studentsPerGroup;
 
+    /*
+    TODO: Enable charts to have groups of 3 but the left-most chair in each group is blocked.
+    Proposal: When creating charts, whenever a new group is created make the BLOCKED student and assign them to the
+    blocked position and then freeze them there.  Need to double-check that freezing makes sense everywhere.
+
+    Also need to be sure that the BLOCKED student isn't saved in any histories or used to calculate any penatlies.
+     */
     private Comparator<Group> groupComparator = new Comparator<Group>() {
         @Override
         public int compare(Group o1, Group o2) {
             return Double.compare(o1.getPenalty(), o2.getPenalty());
         }
     };
+
     private PriorityQueue<Group> highestConflictGroups = new PriorityQueue<>(groupComparator);
     private boolean penaltyDirty = true;
 
@@ -31,6 +39,15 @@ public class SeatingChart {
         students = new ArrayList<>();
         groups = new ArrayList<>();
         this.studentsPerGroup = studentsPerGroup;
+    }
+
+    public SeatingChart(int studentsPerGroup, int numGroupsToMake) {
+        students = new ArrayList<>();
+        groups = new ArrayList<>();
+        this.studentsPerGroup = studentsPerGroup;
+        for (int i = 0; i < numGroupsToMake; i++) {
+            this.groups.add( new Group(this, studentsPerGroup) );
+        }
     }
 
     public SeatingChart(ArrayList<Student> students, int studentsPerGroup) {
@@ -87,7 +104,7 @@ public class SeatingChart {
         this.penaltyDirty = true;
     }
 
-    private Group findDeskWithSpace() {
+    public Group findDeskWithSpace() {
         for (Group desk : groups) {
             if (desk.hasSpace()) return desk;
         }
@@ -371,5 +388,9 @@ public class SeatingChart {
     public void clear() {
         groups.clear();
         students.clear();
+    }
+
+    public int getStudentsPerGroup() {
+        return this.studentsPerGroup;
     }
 }

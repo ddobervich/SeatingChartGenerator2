@@ -38,8 +38,8 @@ public class Student {
     public static Student makeStudentFromRow(String line) throws Exception {
         String[] vals = line.split(",");
         int id = Integer.parseInt(vals[0].trim());
-        String fn = vals[1].trim();
-        String ln = vals[2].trim();
+        String fn = vals[2].trim();
+        String ln = vals[1].trim();
 
 /*        double exp = averageGrades(vals, 3, 8);
         boolean same = Boolean.parseBoolean(vals[9]);

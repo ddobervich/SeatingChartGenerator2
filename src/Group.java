@@ -8,6 +8,7 @@ public class Group {
     private static final int RIGHT = 1;
     private static final double SKILL_DIFF_THRESHOLD = 15;
     private static int nextId = 1;
+    private static final Student BLOCKED = new Student(0, "No one", "", "No one", 0, true, true, true, true, true, "", "");
     private int id;
     private Student[] seats;
     private boolean[] frozen;
@@ -187,16 +188,21 @@ public class Group {
         return null;
     }
 
-    public ArrayList<Student> clearExceptFrozen() {
+    public ArrayList<Student> clearExceptFrozen(boolean clearBlocked) {
         ArrayList<Student> cleared = new ArrayList<>();
         for (int i = 0; i < seats.length; i++) {
             if (!frozen[i] && seats[i] != null) {
+                if (!clearBlocked && seats[i] == BLOCKED) continue;
                 cleared.add(seats[i]);
                 seats[i] = null;
                 this.penaltyDirty  = true;
             }
         }
         return cleared;
+    }
+
+    public ArrayList<Student> clearExceptFrozen() {
+        return clearExceptFrozen(true);
     }
 
     public boolean isEmpty() {
@@ -257,9 +263,11 @@ public class Group {
         double penalty = 0;
         for (int i = 0; i < this.seats.length; i++) {
             if (seats[i] == null) continue;
+            if (seats[i] == BLOCKED) continue;
 
             for (int j = i+1; j < seats.length; j++) {
                 if (seats[j] == null) continue;
+                if (seats[j] == BLOCKED) continue;
 
                 double skillDiff = Math.abs(seats[i].getExperienceLevel() - seats[j].getExperienceLevel());
                 if (skillDiff > SKILL_DIFF_THRESHOLD) {
@@ -279,9 +287,11 @@ public class Group {
         double penalty = 0;
         for (int i = 0; i < this.seats.length; i++) {
             if (seats[i] == null) continue;
+            if (seats[i] == BLOCKED) continue;
 
             for (int j = i+1; j < seats.length; j++) {
                 if (seats[j] == null) continue;
+                if (seats[j] == BLOCKED) continue;
 
                 penalty += PENALTY_LEVEL[1] * seats[i].isAffinityViolation(seats[j]);
                 penalty += PENALTY_LEVEL[1] * seats[j].isAffinityViolation(seats[i]);
@@ -295,9 +305,11 @@ public class Group {
         double penalty = 0;
         for (int i = 0; i < this.seats.length; i++) {
             if (seats[i] == null) continue;
+            if (seats[i] == BLOCKED) continue;
 
             for (int j = i+1; j < seats.length; j++) {
                 if (seats[j] == null) continue;
+                if (seats[j] == BLOCKED) continue;
 
                 penalty += PENALTY_LEVEL[0] * seats[i].timesSatWith(""+seats[j].getId());
             }
@@ -324,9 +336,11 @@ public class Group {
     public void updatePartnerHistories() {
         for (int i = 0; i < seats.length; i++) {
             if (seats[i] == null) continue;
+            if (seats[i] == BLOCKED) continue;
 
             for (int j = i+1; j < seats.length; j++) {
                 if (seats[j] == null) continue;
+                if (seats[j] == BLOCKED) continue;
 
                 seats[i].recordSittingWith(seats[j]);
                 seats[j].recordSittingWith(seats[i]);
@@ -342,6 +356,20 @@ public class Group {
         return frozen[position];
     }
 
+    public boolean unBlock(int position) {
+        if (seats[position] == BLOCKED) {
+            seats[position] = null;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean blockEmptySeat(int position) {
+        if (!isEmpty(position)) return false;
+        seats[position] = BLOCKED;
+        return true;
+    }
+
     public int getGroupSize() {
         return this.groupSize;
     }
@@ -353,5 +381,35 @@ public class Group {
         }
         row = row.substring(0, row.length()-1); // remove last comma
         return row;
+    }
+
+    public void freeze(int position) {
+        if (position >= 0 && position < seats.length) {
+            frozen[position] = true;
+        }
+    }
+
+    public SeatingChart getChart() {
+        return this.chart;
+    }
+
+    /***
+     * If a student is in the position to be blocked they will be randomly re-assigned to an empty seat in the chart
+     * If no empty seats exist, process exits.
+     * Otherwise, seat will be blocked and frozen.
+     * @param position
+     */
+    public void blockSeat(int position) {
+        if (!isEmpty(position)) {
+            Group newDesk = chart.findDeskWithSpace();
+            if (newDesk == null) {
+                System.err.println("No space to re-assign student " + get(position));
+                return;
+            }
+
+            newDesk.add(remove(position));
+        }
+        blockEmptySeat(position);
+        freeze(position);
     }
 }

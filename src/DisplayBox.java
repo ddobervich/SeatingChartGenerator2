@@ -185,9 +185,10 @@ public class DisplayBox {
     }
 
     private String displayExpStringFor(double exp) {
-        if (exp > 85) return "Adv";
-        if (exp > 80) return "Mid+";
-        if (exp > 60) return "Mid";
+        if (exp > 82) return "Adv";
+        if (exp > 78) return "Mid+";
+        if (exp > 65) return "Mid";
+        if (exp > 60) return "Mid-";
         if (exp > 55) return "Beg+";
         if (exp > 45) return "Beg";
         return "Beg-";
@@ -220,14 +221,35 @@ public class DisplayBox {
         window.rect(x + (int) (c * ((double) w / cols)), y + (int) (r * ((double) h / rows)), (int) (w / cols), (int) (h / rows));
     }
 
+    /***
+     * Handle the mouse click.  If (mouseX, mouseY) isn't on this displaybox, do nothing.
+     * If 'b' is being held, we block the desk being clicked on (Ranodmly re-assigning a student who may already be there)
+     * Otherwise, we remove the student from this desk location entirely. (eg, if they're absent).
+     *
+     * @param mouseX
+     * @param mouseY
+     * @param window
+     */
     public void handleMouseClick(int mouseX, int mouseY, PApplet window) {
+        int position = getPositionOf(mouseX, mouseY);
+        if (position == -1) return;
+
+        if (window.keyPressed && window.key == 'b') {       // block this desk
+            desk.blockSeat(position);
+        } else {                                            // delete the desk
+            this.desk.delete(position);
+        }
+    }
+
+    public int getPositionOf(int mouseX, int mouseY) {
         int[] indicies = getNameBoxIndicies(mouseX, mouseY);
-        if (indicies == null) return;
+        if (indicies == null) return -1;
 
         int r = indicies[0];
         int c = indicies[1];
 
-        this.desk.delete(r * cols + c);
+        int position = r * cols + c;
+        return position;
     }
 
     public void highlight(PApplet window, int color) {
