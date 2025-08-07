@@ -17,7 +17,7 @@ TODO: make color-coding for attainment (or other marking) so I can print and me/
 public class Main extends PApplet {
     private ControlWindow controlWindow;
 
-    private String BASE_PATH = "DataFiles/";
+    private String BASE_PATH = "DataFiles/Example/";
     private String file = "block1-2025.csv";
 
     private static final float TEXT_SIZE = 32;
@@ -135,17 +135,17 @@ public class Main extends PApplet {
         int X_SKIP = 400;
         int Y_SKIP = 200;
         int X_START = 25;
-        int Y_START = 50;
+        int Y_START = 50+150;
 
         int nextGroup = 0;
 
-        for (int row = 4; row >= 0; row--) {
-            for (int col = 2; col >= 0; col--) {
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 3; col++) {
                 if (nextGroup >= chart.getGroups().size()) return out;
                 Group group = chart.getGroups().get(nextGroup);
                 nextGroup++;
 
-                DisplayBox box = new DisplayBox(X_START + col * (BOX_WIDTH + 30), Y_START + row * (BOX_HEIGHT + 80), BOX_WIDTH, BOX_HEIGHT, 1, group.size(), group);
+                DisplayBox box = new DisplayBox(X_START + col * (BOX_WIDTH + 30), height - (Y_START + (row * (BOX_HEIGHT + 80))), BOX_WIDTH, BOX_HEIGHT, 1, group.size(), group);
                 out.add(box);
             }
         }
@@ -175,16 +175,19 @@ public class Main extends PApplet {
     public void draw() {
         background(255);
 
-        int i = 1;
+        int groupNum = 1;
         for (DisplayBox box : displayList) {
             box.draw(this, isOn("display conflicts"), true, isOn("mirror"));
-            if (displayMode == ROOM_LAYOUT && isOn("group numbers")) {
-                box.drawGroupNumber(i, this, isOn("mirror"));
+/*            if (displayMode == ROOM_LAYOUT && isOn("group numbers")) {
+                box.drawGroupNumber(groupNum, this, isOn("mirror"));
+            }*/
+            if (displayMode == ROOM_LAYOUT && isOn("table numbers")) {
+                box.drawTableNumbers(groupNum, this, isOn("mirror"));
             }
             if (displayMode == ROOM_LAYOUT && isOn("exp level")) {
                 box.drawExperienceLevel(this, isOn("mirror"));
             }
-            i++;
+            groupNum++;
         }
         textSize(TEXT_SIZE);
 
@@ -321,7 +324,7 @@ public class Main extends PApplet {
         }
 
         if (key == 'n' || key == 'N') {
-            toggle("group numbers");
+            toggle("table numbers");
         }
 
         if (key == 'o' || key == 'O') {
