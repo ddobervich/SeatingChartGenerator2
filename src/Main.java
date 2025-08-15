@@ -17,7 +17,7 @@ TODO: make color-coding for attainment (or other marking) so I can print and me/
 public class Main extends PApplet {
     private ControlWindow controlWindow;
 
-    private String BASE_PATH = "DataFiles/Example/";
+    private String BASE_PATH = "DataFiles/";
     private String file = "block1-2025.csv";
 
     private static final float TEXT_SIZE = 32;
@@ -178,9 +178,9 @@ public class Main extends PApplet {
         int groupNum = 1;
         for (DisplayBox box : displayList) {
             box.draw(this, isOn("display conflicts"), true, isOn("mirror"));
-/*            if (displayMode == ROOM_LAYOUT && isOn("group numbers")) {
+            if (displayMode == ROOM_LAYOUT && isOn("group numbers")) {
                 box.drawGroupNumber(groupNum, this, isOn("mirror"));
-            }*/
+            }
             if (displayMode == ROOM_LAYOUT && isOn("table numbers")) {
                 box.drawTableNumbers(groupNum, this, isOn("mirror"));
             }

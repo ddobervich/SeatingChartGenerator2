@@ -346,4 +346,30 @@ public class DisplayBox {
             }
         }
     }
+
+    public void drawTableNumbers(int groupNum, PApplet window, boolean mirror) {
+        window.textSize(20);
+        window.textAlign(window.CENTER, window.CENTER);
+        int seatNum = (groupNum-1)*this.rows*this.cols + 1;        // assumes all tables have same number of seats!
+        float boxWidth = w / (float)cols;
+        float boxHeight = h / (float)rows;
+
+        if (mirror) {
+            for (int displayRow = 0; displayRow < rows; displayRow++) {
+                for (int displayCol = 0; displayCol < cols; displayCol++) {
+                    float displayX = x + boxWidth/2 + displayCol*boxWidth;
+                    float displayY = y + boxHeight/2 + displayRow*boxHeight;
+                    window.text("" + seatNum++, window.width - displayX, displayY);
+                }
+            }
+        } else {
+            for (int displayRow = 0; displayRow < rows; displayRow++) {
+                for (int displayCol = 0; displayCol < cols; displayCol++) {
+                    float displayX = x + boxWidth/2 + displayCol*boxWidth;
+                    float displayY = y + boxHeight/2 + displayRow*boxHeight;
+                    window.text("" + seatNum++, displayX, displayY);
+                }
+            }
+        }
+    }
 }

@@ -20,9 +20,10 @@ public class ControlWindow extends PApplet {
 
     public void setup() {
         switches.put("group numbers", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN)).setText("display group (n)umbers"));
-        switches.put("mirror", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*2)).setText("mirror for (p)rinting"));
-        switches.put("display conflicts", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*4)).setText("display (c)onflicts"));
-        switches.put("exp level", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*6)).setText("display (e)xperience level"));
+        switches.put("table numbers", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*2)).setText("display table (n)umbers"));
+        switches.put("mirror", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*4)).setText("mirror for (p)rinting"));
+        switches.put("display conflicts", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*6)).setText("display (c)onflicts"));
+        switches.put("exp level", new ToggleSwitch(new PVector(LEFT_MARGIN, 4*MARGIN + ToggleSwitch.h*8)).setText("display (e)xperience level"));
     }
 
     public void draw() {
