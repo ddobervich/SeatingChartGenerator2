@@ -8,7 +8,8 @@ import java.util.ArrayList;
 /*
 todo:  ADD ABILITY TO DRAG CARD OFF A SEAT TO SIDE AREA TEMPORARILY...
             MAYBE A "TO BE ADDED LIST AREA"
-
+TODO: make group numbers smaller, add more buffer for long names.
+TODO: add a "coaching" mode where someone higher is placed in the middle with some lower folks
 TODO: bug: if some charts have 2 per group and some 3, display doesn't change as we arrow through them
 TODO: add way to delete a chart that appropriately updates the partner histories
 TODO: make color-coding for attainment (or other marking) so I can print and me/TA's can see

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Student {
     private static final double LARGE_EXP_DIFF_THRESHOLD = 2;
@@ -48,6 +49,7 @@ public class Student {
         boolean solo = Boolean.parseBoolean(vals[12]);
         boolean collab = Boolean.parseBoolean(vals[13]);*/
         String gender = vals[3];
+        if (Objects.equals(vals[4], "")) vals[4] = "0";
         double exp = Double.parseDouble(vals[4]);
         String wantsGender = "";
         if (vals.length > 10) {      // REMEMBER: if it's the 10th col, vals.length > 9, then access vals[9]

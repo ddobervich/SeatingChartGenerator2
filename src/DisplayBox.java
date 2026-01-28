@@ -132,6 +132,9 @@ public class DisplayBox {
                 String name = getName(position);
 
                 getFittingTextSize(window, name, colWidth, textSize);
+
+
+
                 if (horizontallyReflect) {
                     window.text(name, deskX - colWidth, deskY);
                 } else {
@@ -166,6 +169,8 @@ public class DisplayBox {
                 minSize = midSize + 0.5f;  // Increase the min size
             }
         }
+
+        minSize -= 2;      // make a bit smaller
 
         // Use the smaller value of minSize to ensure it fits
         window.textSize(minSize);
